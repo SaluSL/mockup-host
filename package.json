@@ -1,0 +1,16 @@
+{
+  "name": "mockups",
+  "private": true,
+  "type": "module",
+  "workspaces": ["shared", "server", "cli"],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b shared server cli"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "@types/node": "^22.10.1"
+  }
+}
