@@ -67,6 +67,15 @@ export function MockupsPage(props: {
               <td>{mockup.fileCount || "-"}</td>
               <td>{formatDate(mockup.lastPushedAt)}</td>
               <td>
+                <form
+                  class="inline"
+                  method="post"
+                  action={`/mockups/${mockup.id}/content`}
+                  enctype="multipart/form-data"
+                >
+                  <input type="file" name="file" accept=".zip,application/zip" required />
+                  <button type="submit">Upload zip</button>
+                </form>
                 <form class="inline" method="post" action={`/mockups/${mockup.id}/rename`}>
                   <input name="name" placeholder="Rename" required />
                   <button type="submit">Rename</button>

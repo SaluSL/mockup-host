@@ -25,7 +25,33 @@ export function Layout(props: { title: string; children: unknown }) {
         <title>{props.title}</title>
         <style dangerouslySetInnerHTML={{ __html: STYLE }} />
       </head>
-      <body>{props.children}</body>
+      <body>
+        {props.children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+document.addEventListener('dragover', (e) => e.preventDefault());
+document.addEventListener('drop', (e) => {
+  const row = e.target.closest('tr');
+  const input = row && row.querySelector('input[type=file]');
+  if (!input || !e.dataTransfer.files.length) return;
+  e.preventDefault();
+  input.files = e.dataTransfer.files;
+  input.form.submit();
+});
+document.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('copy')) return;
+  const url = e.target.closest('td').querySelector('.share-url').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    const label = e.target.textContent;
+    e.target.textContent = 'Copied';
+    setTimeout(() => { e.target.textContent = label; }, 1200);
+  });
+});
+`,
+          }}
+        />
+      </body>
     </html>
   );
 }
