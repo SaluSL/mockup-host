@@ -1,3 +1,4 @@
+/** @jsxImportSource hono/jsx */
 import type { MockupSummary } from "@mockups/shared";
 import { mockupUrl } from "@mockups/shared";
 import { Layout } from "./layout.js";

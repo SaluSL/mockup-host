@@ -65,6 +65,10 @@ describe("isRegularFileMode", () => {
     expect(isRegularFileMode(0)).toBe(true);
   });
 
+  it("accepts permission bits with no file-type bits, as Python's zipfile writes", () => {
+    expect(isRegularFileMode(attrs(0o600))).toBe(true);
+  });
+
   it("rejects a symlink (0120777)", () => {
     expect(isRegularFileMode(attrs(0o120777))).toBe(false);
   });

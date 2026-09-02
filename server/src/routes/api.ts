@@ -39,7 +39,9 @@ export function createApiRoutes(deps: ApiDeps): Hono<AppEnv> {
   app.use("/api/*", requireToken(deps.db));
 
   app.post("/api/mockups/resolve", async (c) => {
-    const body = await c.req.json<{ slug?: string; name?: string }>().catch(() => ({}));
+    const body = await c.req
+      .json<{ slug?: string; name?: string }>()
+      .catch((): { slug?: string; name?: string } => ({}));
     const slug = body.slug ?? "";
     if (!SLUG_PATTERN.test(slug)) {
       return c.json({ error: "slug must be lowercase words separated by hyphens" }, 400);

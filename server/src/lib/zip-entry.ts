@@ -37,6 +37,10 @@ export function validateEntryName(rawName: string): EntryValidation {
 
 export function isRegularFileMode(externalFileAttributes: number): boolean {
   const mode = (externalFileAttributes >>> 16) & 0xffff;
-  if (mode === 0) return true;
-  return (mode & S_IFMT) === S_IFREG;
+  // Many writers store no unix mode at all, and others (Python's zipfile among
+  // them) store permission bits with the file-type bits left clear. Neither can
+  // be a symlink or a device, so only an explicitly non-regular type is refused.
+  const fileType = mode & S_IFMT;
+  if (fileType === 0) return true;
+  return fileType === S_IFREG;
 }

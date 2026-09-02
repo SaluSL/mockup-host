@@ -1,3 +1,4 @@
+/** @jsxImportSource hono/jsx */
 import { rm } from "node:fs/promises";
 import { dirname } from "node:path";
 import { eq } from "drizzle-orm";

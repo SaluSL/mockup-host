@@ -96,7 +96,10 @@ export async function receiveUpload(c: Context, maxBytes: number): Promise<strin
   });
 
   try {
-    await pipeline(Readable.fromWeb(source.pipeThrough(counted)), createWriteStream(target));
+    // Node's fromWeb types are stricter about the chunk type than the DOM
+    // ReadableStream that pipeThrough returns; the runtime contract is identical.
+    const piped = source.pipeThrough(counted) as unknown as Parameters<typeof Readable.fromWeb>[0];
+    await pipeline(Readable.fromWeb(piped), createWriteStream(target));
   } catch (error) {
     await rm(dir, { recursive: true, force: true });
     // The stream machinery wraps an error thrown inside transform().

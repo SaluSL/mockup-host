@@ -1,3 +1,4 @@
+/** @jsxImportSource hono/jsx */
 const STYLE = `
   :root { color-scheme: light dark; }
   body { font: 15px/1.5 ui-sans-serif, system-ui, sans-serif; margin: 0; padding: 2rem; max-width: 60rem; }
