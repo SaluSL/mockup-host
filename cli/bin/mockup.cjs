@@ -1131,7 +1131,7 @@ function initProject(cwd, slug) {
 var import_promises = require("node:readline/promises");
 async function login() {
   const rl = (0, import_promises.createInterface)({ input: process.stdin, output: process.stdout });
-  const serverUrl = (await rl.question("Panel URL (e.g. https://panel.mockups.example.com): ")).trim();
+  const serverUrl = (await rl.question("Panel URL (e.g. https://panel-mockups.example.com): ")).trim();
   const token = (await rl.question("API token: ")).trim();
   rl.close();
   if (!serverUrl || !token) throw new Error("Both a panel URL and a token are required");

@@ -5390,7 +5390,7 @@ import { userConfigPath, writeUserConfig } from "../config.js";
 
 export async function login(): Promise<void> {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
-  const serverUrl = (await rl.question("Panel URL (e.g. https://panel.mockups.example.com): ")).trim();
+  const serverUrl = (await rl.question("Panel URL (e.g. https://panel-mockups.example.com): ")).trim();
   const token = (await rl.question("API token: ")).trim();
   rl.close();
 
@@ -5664,7 +5664,7 @@ volumes:
 	email you@example.com
 }
 
-mockups.example.com, panel.mockups.example.com {
+mockups.example.com, panel-mockups.example.com {
 	encode zstd gzip
 
 	request_body {
@@ -5689,7 +5689,7 @@ upload over a slow link outlives Caddy's defaults.
 
 ```bash
 # Hostnames. The panel MUST NOT share an origin with the mockups.
-PANEL_HOST=panel.mockups.example.com
+PANEL_HOST=panel-mockups.example.com
 MOCKUPS_HOST=mockups.example.com
 
 # Panel login. Generate the hash with: npm run hash-password -w @mockups/server
@@ -5728,7 +5728,7 @@ docker compose build
 
 Then, with a `.env` filled in, `docker compose up -d` and check:
 
-- `curl -H 'Host: panel.mockups.example.com' http://localhost/login` returns the login form.
+- `curl -H 'Host: panel-mockups.example.com' http://localhost/login` returns the login form.
 - `curl -H 'Host: mockups.example.com' http://localhost/login` returns 404.
 - Signing in, creating a mockup, and pushing to it from a real Vite project produces a working
   share URL whose assets load from `/m/<uuid>/`.

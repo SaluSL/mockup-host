@@ -8,7 +8,7 @@ https://mockups.example.com/m/<uuid>
 
 Mockups are published from the command line — the CLI builds the project with the
 right base path, archives the output, and uploads it — or by dropping a zip on the
-management panel. The panel lives on its own hostname, `panel.mockups.example.com`,
+management panel. The panel lives on its own hostname, `panel-mockups.example.com`,
 behind a username and password.
 
 **A share URL is unlisted, not access-controlled.** Anyone holding the link can view
@@ -24,8 +24,18 @@ npm run hash-password -w @mockups/server     # paste into ADMIN_PASSWORD_HASH
 docker compose up -d --build
 ```
 
-Point both DNS records — `mockups.example.com` and `panel.mockups.example.com` — at the
+Point both DNS records — `mockups.example.com` and `panel-mockups.example.com` — at the
 host. Caddy obtains certificates for both on first request.
+
+The panel is a **sibling** label, not `panel.mockups.example.com`. A wildcard
+certificate matches exactly one label, so a nested name is not covered by
+`*.example.com` — behind Cloudflare's Universal SSL that means the edge has no
+certificate for it and drops the TLS handshake before any HTTP happens. Keep both
+hostnames one label below the apex.
+
+If the records are proxied through Cloudflare, note that the free plan caps request
+bodies at 100MB, below this project's 200MB `MAX_UPLOAD_BYTES`; a larger push is
+rejected at the edge rather than by the app.
 
 The password prompt writes the hash to stdout and the prompt itself to stderr, so
 `npm run hash-password -w @mockups/server > hash.txt` captures only the value. The
@@ -55,7 +65,7 @@ Instead of `mockup login`, CI and one-off shells can pass the two values as
 environment variables:
 
 ```bash
-export MOCKUP_SERVER=https://panel.mockups.example.com MOCKUP_TOKEN=mk_...
+export MOCKUP_SERVER=https://panel-mockups.example.com MOCKUP_TOKEN=mk_...
 ```
 
 `cli/bin/mockup.cjs` is a committed build artifact so that install stays a

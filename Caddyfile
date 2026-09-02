@@ -6,7 +6,7 @@
 # The body cap sits above MAX_UPLOAD_BYTES so an oversized push is refused by the
 # application with a JSON error rather than cut off at the edge, and the timeouts
 # are raised because a 200MB upload over a slow link outlives Caddy's defaults.
-mockups.example.com, panel.mockups.example.com {
+mockups.example.com, panel-mockups.example.com {
 	encode zstd gzip
 
 	request_body {

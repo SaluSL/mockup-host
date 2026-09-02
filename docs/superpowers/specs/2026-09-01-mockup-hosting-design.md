@@ -18,7 +18,7 @@ https://mockups.example.com/m/<uuid>
 The panel lives on a separate hostname (see [Security model](#security-model)):
 
 ```
-https://panel.mockups.example.com
+https://panel-mockups.example.com
 ```
 
 ## Success criteria
@@ -113,13 +113,20 @@ prevents a mockup's script from issuing `fetch('/panel/api/...')`: the browser
 attaches the session cookie because the request is same-origin, `SameSite` does not
 apply within an origin, and a CSRF token is readable by same-origin JavaScript.
 
-**Decision:** the panel is served from its own hostname, `panel.mockups.example.com`,
+**Decision:** the panel is served from its own hostname, `panel-mockups.example.com`,
 so the session cookie is scoped to an origin no mockup can reach. Same container,
 same application; a host-check middleware enforces the split in the application
 rather than relying only on Caddy. Panel routes return 404 on the mockups
 hostname, and mockup routes return 404 on the panel hostname.
 
 Shareable URLs are unaffected: `https://mockups.example.com/m/<uuid>`.
+
+The panel is a sibling label rather than the more natural-looking
+`panel.mockups.example.com`, because a wildcard certificate matches exactly one
+label. A nested name falls outside `*.example.com`, and behind Cloudflare's
+Universal SSL that means the edge presents no certificate and drops the TLS
+handshake before any HTTP is exchanged. Both hostnames stay one label below the
+apex. (Found the hard way, after the nested name failed to serve in production.)
 
 Additional measures:
 
@@ -275,7 +282,7 @@ Range requests are supported for large assets and media.
 
 ### Panel
 
-Behind login on `panel.mockups.example.com`:
+Behind login on `panel-mockups.example.com`:
 
 - List: name, slug, share URL with copy button, size, file count, last pushed,
   warning badge where present.
