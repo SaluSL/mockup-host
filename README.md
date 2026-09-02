@@ -35,10 +35,33 @@ password is never passed as an argument, which would put it in shell history.
 
 Create a token in the panel under **Tokens**. It is shown once.
 
+On the machine with this repo:
+
 ```bash
-npm i -g ./cli          # or: npm link --workspace @mockups/cli
+npm link --workspace @mockups/cli
 mockup login            # panel URL + the token, stored 0600 in ~/.config/mockup/
 ```
+
+On any other machine, the CLI is a single self-contained file — no clone, no
+`npm install`, nothing but Node 22:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/SaluSL/mockup-host/master/cli/bin/mockup.cjs \
+  -o ~/.local/bin/mockup && chmod +x ~/.local/bin/mockup
+mockup login
+```
+
+Instead of `mockup login`, CI and one-off shells can pass the two values as
+environment variables:
+
+```bash
+export MOCKUP_SERVER=https://panel.mockups.example.com MOCKUP_TOKEN=mk_...
+```
+
+`cli/bin/mockup.cjs` is a committed build artifact so that install stays a
+single command. Regenerate it with `npm run bundle -w @mockups/cli` after
+changing anything under `cli/src`, and commit the result — otherwise other
+machines keep running the old CLI.
 
 Then, in a project directory:
 

@@ -2,10 +2,13 @@
   "name": "@mockups/cli",
   "private": true,
   "type": "module",
-  "bin": { "mockup": "./dist/index.js" },
+  "bin": {
+    "mockup": "./bin/mockup.cjs"
+  },
   "scripts": {
     "build": "tsc -b",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --target=node22 --format=cjs --outfile=bin/mockup.cjs && chmod +x bin/mockup.cjs"
   },
   "dependencies": {
     "@mockups/shared": "*",
@@ -13,6 +16,7 @@
   },
   "devDependencies": {
     "@types/yazl": "^2.4.5",
+    "esbuild": "^0.24.0",
     "tsx": "^4.19.2"
   }
 }
