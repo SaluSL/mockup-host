@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createApp } from "../src/app.js";
+import { createApiToken } from "../src/lib/tokens.js";
 import type { Env } from "../src/env.js";
 import { createMockupCache } from "../src/lib/mockup-cache.js";
 import { hashPassword } from "../src/lib/password.js";
@@ -10,6 +11,7 @@ import { createTestDb } from "./helpers/db.js";
 
 let ctx: ReturnType<typeof createTestDb>;
 let app: ReturnType<typeof createApp>;
+let baseEnv: Env;
 
 const PANEL = { host: "panel.example.org" };
 const MOCKUPS = { host: "mockups.example.org" };
@@ -29,6 +31,7 @@ beforeEach(async () => {
     NODE_ENV: "test",
   };
 
+  baseEnv = env;
   app = createApp({
     db: ctx.db,
     storage: createStorage(env.DATA_DIR),
@@ -70,5 +73,36 @@ describe("host dispatch", () => {
   it("does not leak the panel hostname in a 404 body", async () => {
     const res = await app.request("/login", { headers: MOCKUPS });
     expect(await res.text()).not.toContain("panel.example.org");
+  });
+});
+
+describe("share urls", () => {
+  async function shareUrl(app: ReturnType<typeof createApp>): Promise<string> {
+    const token = createApiToken(ctx.db, "test").token;
+    const res = await app.request("/api/mockups/resolve", {
+      method: "POST",
+      headers: {
+        ...PANEL,
+        authorization: `Bearer ${token}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ slug: "acme" }),
+    });
+    return ((await res.json()) as { url: string }).url;
+  }
+
+  it("carries the port outside production, where the app is reached directly", async () => {
+    expect(await shareUrl(app)).toMatch("http://mockups.example.org:3000/m/");
+  });
+
+  it("omits the port in production, where Caddy fronts it on 443", async () => {
+    const production = createApp({
+      db: ctx.db,
+      storage: createStorage(baseEnv.DATA_DIR),
+      cache: createMockupCache(ctx.db),
+      env: { ...baseEnv, NODE_ENV: "production" },
+    });
+
+    expect(await shareUrl(production)).toMatch("https://mockups.example.org/m/");
   });
 });

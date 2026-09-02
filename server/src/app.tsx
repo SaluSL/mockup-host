@@ -19,8 +19,12 @@ export interface AppOptions {
 }
 
 export function createApp({ db, storage, cache, env }: AppOptions): Hono<AppEnv> {
-  const scheme = env.NODE_ENV === "production" ? "https" : "http";
-  const mockupsOrigin = `${scheme}://${env.MOCKUPS_HOST}`;
+  // In production the app sits behind Caddy on the default port, so the origin is
+  // just the hostname. Anywhere else it is reached on PORT directly, and a share
+  // URL without that port does not resolve.
+  const isProduction = env.NODE_ENV === "production";
+  const scheme = isProduction ? "https" : "http";
+  const mockupsOrigin = `${scheme}://${env.MOCKUPS_HOST}${isProduction ? "" : `:${env.PORT}`}`;
   const shared = { db, storage, cache, limits: DEFAULT_EXTRACT_LIMITS };
 
   const mockupsSite = new Hono<AppEnv>();
